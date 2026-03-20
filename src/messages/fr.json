@@ -1,0 +1,17 @@
+{
+  "Index": {
+    "title": "Un style intemporel",
+    "description": "Élevez votre garde-robe avec un luxe minimaliste."
+  },
+  "Header": {
+    "shop": "Collections",
+    "search": "Rechercher...",
+    "cart": "Panier",
+    "wishlist": "Favoris"
+  },
+  "Cart": {
+    "empty": "Votre panier est vide.",
+    "subtotal": "Sous-total",
+    "checkout": "Paiement"
+  }
+}

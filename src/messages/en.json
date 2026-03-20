@@ -1,0 +1,17 @@
+{
+  "Index": {
+    "title": "Experience Timeless Style",
+    "description": "Elevate your wardrobe with minimalist luxury."
+  },
+  "Header": {
+    "shop": "Shop Collections",
+    "search": "Search items...",
+    "cart": "Shopping Bag",
+    "wishlist": "Wishlist"
+  },
+  "Cart": {
+    "empty": "Your bag is empty.",
+    "subtotal": "Subtotal",
+    "checkout": "Begin Checkout"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "Index": {
+    "title": "体验永恒风格",
+    "description": "以极简奢华提升您的衣橱。"
+  },
+  "Header": {
+    "shop": "精选系列",
+    "search": "搜索物品...",
+    "cart": "购物袋",
+    "wishlist": "愿望清单"
+  },
+  "Cart": {
+    "empty": "您的购物袋是空的。",
+    "subtotal": "小计",
+    "checkout": "开始结帐"
+  }
+}

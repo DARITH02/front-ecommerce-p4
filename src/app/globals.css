@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Default: Dark mode according to request */
+    --brand: #FF4D00;
+    --brand-dim: #CC3D00;
+    --ink: #0D0D0D;
+    --surface: #111318;
+    --surface-2: #1A1D24;
+    --surface-3: #22262F;
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #F2F0EB;
+    --muted: #7A8494;
+    --mint: #00D4A5;
+    --gold: #F5C518;
+
+    /* Semantic background and foreground mapping */
+    --background: var(--surface);
+    --foreground: var(--text);
+
+    /* Spacing Grid (4px base) */
+    --spacing-1: 4px;
+    --spacing-2: 8px;
+    --spacing-3: 12px;
+    --spacing-4: 16px;
+    --spacing-6: 24px;
+    --spacing-8: 32px;
+    --spacing-12: 48px;
+    --spacing-16: 64px;
+    --spacing-24: 96px;
+
+    /* Radius Tokens */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Inverse for light mode toggle */
+  .light {
+    --surface: #FFFFFF;
+    --surface-2: #F4F5F7;
+    --surface-3: #E8EAED;
+    --ink: #0D0D0D;
+    --text: #1A1A1A;
+    --muted: #6B7280;
+    --border: rgba(0, 0, 0, 0.08);
+    --background: var(--surface);
+    --foreground: var(--text);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  --color-brand: var(--brand);
+  --color-brand-dim: var(--brand-dim);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border-custom: var(--border);
+  --color-text-main: var(--text);
+  --color-muted-main: var(--muted);
+  --color-mint: var(--mint);
+  --color-gold: var(--gold);
+
+  --font-display: "Clash Display", sans-serif;
+  --font-body: "Cabinet Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --rounded-6: 6px;
+  --rounded-12: 12px;
+  --rounded-20: 20px;
+
+  /* Spacing Scale override or additive */
+  --spacing-grid-1: 4px;
+  --spacing-grid-2: 8px;
+  --spacing-grid-3: 12px;
+  --spacing-grid-4: 16px;
+  --spacing-grid-6: 24px;
+  --spacing-grid-8: 32px;
+  --spacing-grid-12: 48px;
+  --spacing-grid-16: 64px;
+  --spacing-grid-24: 96px;
+
+  /* Custom Transitions */
+  --animate-stagger-fade: stagger-fade 0.4s ease-out;
+  --animate-cart-bounce: cart-bounce 0.3s ease-out-in;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-text-main font-body selection:bg-brand selection:text-ink;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-medium tracking-tight overflow-hidden;
+  }
+
+  h1 { @apply text-[44px] md:text-[80px] leading-[0.95]; }
+  h2 { @apply text-[36px] md:text-[64px] leading-[1]; }
+  h3 { @apply text-[28px] md:text-[48px] leading-[1.1]; }
+  h4 { @apply text-[22px] md:text-[32px]; }
+  h5 { @apply text-[18px] md:text-[24px]; }
+  h6 { @apply text-[16px] md:text-[20px]; }
+
+  .price { @apply font-mono font-semibold; }
+}
+
+@layer components {
+  /* Staggered fade-up animation classes */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Skeleton base */
+  .skeleton {
+    @apply bg-surface-3 animate-pulse rounded;
+  }
+}
+
+@keyframes stagger-fade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cart-bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
