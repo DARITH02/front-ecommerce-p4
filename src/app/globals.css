@@ -60,6 +60,8 @@
   --color-brand-dim: var(--brand-dim);
   --color-ink: var(--ink);
   --color-surface: var(--surface);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
   --color-border-custom: var(--border);
@@ -141,4 +143,39 @@
   0% { transform: scale(1); }
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
+}
+
+/* High-End Custom Scrollbar */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-main/20 border-3 border-background rounded-full transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand/60;
+  }
+
+  /* Support for Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) var(--background);
+  }
+}
+
+/* Hide horizontal scrollbar where not needed but keep logic */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

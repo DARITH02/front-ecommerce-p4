@@ -97,15 +97,24 @@ export default function MiniCart() {
                   <div className="space-y-4">
                     {cart.map((item) => (
                       <div key={item.id} className="group flex gap-4 p-3 hover:bg-surface-3 rounded-xl transition-colors">
-                        <div className="relative w-20 h-24 bg-surface-2 rounded-lg overflow-hidden shrink-0">
+                        <Link 
+                          href={`/product/${item.slug}`} 
+                          onClick={() => setMiniCartOpen(false)}
+                          className="relative w-20 h-24 bg-surface-2 rounded-lg overflow-hidden shrink-0"
+                        >
                           <Image src={item.image} alt={item.name} fill className="object-cover" />
-                        </div>
+                        </Link>
                         <div className="flex-1 flex flex-col justify-between py-1">
                           <div className="flex justify-between items-start">
                             <div>
-                              <h4 className="text-sm font-medium text-text-main line-clamp-1 group-hover:text-brand transition-colors">
-                                {item.name}
-                              </h4>
+                              <Link 
+                                href={`/product/${item.slug}`}
+                                onClick={() => setMiniCartOpen(false)}
+                              >
+                                <h4 className="text-sm font-medium text-text-main line-clamp-1 group-hover:text-brand transition-colors">
+                                  {item.name}
+                                </h4>
+                              </Link>
                               {item.variant && (
                                 <p className="text-[10px] text-muted-main uppercase tracking-widest mt-0.5">
                                   Variant: {item.variant}

@@ -1,13 +1,74 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Play, ShoppingBag, MousePointer2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { api } from '@/lib/api/client';
+import { resolveImageUrl } from '@/lib/utils';
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        setLoading(true);
+        const [featuredRes, latestRes] = await Promise.all([
+          api.products.getFeatured(),
+          api.products.getLatest()
+        ]);
+
+        const featured = featuredRes.data || featuredRes;
+        const latest = latestRes.data || latestRes;
+
+        const mapProduct = (p) => ({
+          id: p.id,
+          name: p.name,
+          brand: p.brand?.name || (p.brand_id ? `Brand ${p.brand_id}` : 'Seasonal Launch'),
+          image: resolveImageUrl(p.images?.[0]?.image_url || p.images?.[0]?.image_path || p.image_url || p.image_path || p.image) || 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&w=600&q=80',
+          slug: p.slug,
+          price: parseFloat(p.sale_price || p.price),
+          createdAt: p.created_at,
+          updatedAt: p.updated_at
+        });
+
+        const mappedFeatured = Array.isArray(featured) ? featured.slice(0, 1).map(mapProduct) : [];
+        const mappedLatest = Array.isArray(latest) ? latest.slice(0, 2).map(mapProduct) : [];
+
+        // logic: get two products latest if they are from the same day (created or updated)
+        let displayFeatured = mappedFeatured[0];
+        let displayLatest = mappedLatest[0];
+
+        if (mappedLatest.length >= 2) {
+          const creationDate0 = new Date(mappedLatest[0].createdAt).toDateString();
+          const creationDate1 = new Date(mappedLatest[1].createdAt).toDateString();
+          
+          const updateDate0 = new Date(mappedLatest[0].updatedAt).toDateString();
+          const updateDate1 = new Date(mappedLatest[1].updatedAt).toDateString();
+          
+          if (creationDate0 === creationDate1 || updateDate0 === updateDate1) {
+            displayFeatured = mappedLatest[1]; // Use 2nd latest as "Editors Choice" if same day
+            displayLatest = mappedLatest[0];   // Use 1st latest as "New Arrival"
+          }
+        }
+
+        setFeaturedProducts({
+          featured: [displayFeatured].filter(Boolean),
+          latest: [displayLatest].filter(Boolean)
+        });
+      } catch (error) {
+        console.error('Failed to fetch hero products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHeroData();
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -20,7 +81,7 @@ export default function Hero() {
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ink"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
       {/* Background: Video Overlay Placeholder */}
       <div className="absolute inset-0 z-0">
@@ -33,7 +94,7 @@ export default function Hero() {
         >
           <source src="https://assets.mixkit.co/videos/preview/mixkit-fashion-model-posing-for-the-camera-34502-large.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-transparent to-surface" />
+        <div className="absolute inset-0 bg-gradient-to-b from-surface/80 via-transparent to-surface" />
       </div>
 
       {/* Content Overlay */}
@@ -53,7 +114,7 @@ export default function Hero() {
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand">New Season 2026 Collection</p>
             </div>
             
-            <h1 className="text-5xl sm:text-7xl lg:text-[100px] xl:text-[120px] font-display font-black leading-[0.85] tracking-tighter text-white uppercase drop-shadow-2xl">
+            <h1 className="text-5xl sm:text-7xl lg:text-[100px] xl:text-[120px] font-display font-black leading-[0.85] tracking-tighter text-text-main uppercase drop-shadow-2xl">
               Elevate <br />
               <span className="text-brand">Your Style</span> <br />
               Daily.
@@ -77,9 +138,9 @@ export default function Hero() {
               
               <Link 
                 href="/lookbook" 
-                className="group flex items-center gap-3 text-white px-8 py-5 rounded-full border border-white/20 hover:border-brand/40 hover:bg-white/5 transition-all uppercase tracking-widest text-sm font-medium"
+                className="group flex items-center gap-3 text-text-main px-8 py-5 rounded-full border border-border-custom hover:border-brand/40 hover:bg-surface-2 transition-all uppercase tracking-widest text-sm font-medium"
               >
-                <Play className="w-5 h-5 fill-white" />
+                <Play className="w-5 h-5 fill-current" />
                 See Lookbook
               </Link>
             </div>
@@ -93,17 +154,17 @@ export default function Hero() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4, duration: 1 }}
-              className="absolute top-0 right-12 w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl group border border-white/10"
+              className="absolute top-0 right-12 w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl group border border-border-custom"
             >
               <Image 
-                src="https://images.unsplash.com/photo-1549062326-9462562412f8?auto=format&fit=crop&w=500&q=80" 
-                alt="Product 1" 
+                src={featuredProducts.featured?.[0]?.image || 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&w=500&q=80'} 
+                alt={featuredProducts.featured?.[0]?.name || "Product 1"} 
                 fill 
                 className="object-cover transition-transform duration-1000 group-hover:scale-110" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
-                <p className="text-brand font-bold text-xs uppercase tracking-widest mb-1">Editors Choice</p>
-                <h4 className="text-white font-display font-medium text-lg">Signature Silk Blazer</h4>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
+                <Link href={featuredProducts.featured?.[0]?.slug ? `/product/${featuredProducts.featured[0].slug}` : '#'} className="text-brand font-bold text-xs uppercase tracking-widest mb-1 underline-offset-4 hover:underline">Editors Choice</Link>
+                <h4 className="text-text-main font-display font-medium text-lg">{featuredProducts.featured?.[0]?.name || 'Signature Silk Blazer'}</h4>
               </div>
             </motion.div>
 
@@ -113,17 +174,17 @@ export default function Hero() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 1 }}
-              className="absolute bottom-12 left-24 w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl group border border-white/10 backdrop-blur-3xl"
+              className="absolute bottom-12 left-24 w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl group border border-border-custom backdrop-blur-3xl"
             >
               <Image 
-                src="https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=80" 
-                alt="Product 2" 
+                src={featuredProducts.latest?.[0]?.image || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=80'} 
+                alt={featuredProducts.latest?.[0]?.name || "Product 2"} 
                 fill 
                 className="object-cover transition-transform duration-1000 group-hover:scale-110" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
-                <p className="text-brand font-bold text-xs uppercase tracking-widest mb-1">New Arrivals</p>
-                <h4 className="text-white font-display font-medium text-lg">Urban Leather Collection</h4>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
+                <Link href={featuredProducts.latest?.[0]?.slug ? `/product/${featuredProducts.latest[0].slug}` : '#'} className="text-brand font-bold text-xs uppercase tracking-widest mb-1 underline-offset-4 hover:underline">New Arrivals</Link>
+                <h4 className="text-text-main font-display font-medium text-lg">{featuredProducts.latest?.[0]?.name || 'Urban Leather Collection'}</h4>
               </div>
             </motion.div>
 

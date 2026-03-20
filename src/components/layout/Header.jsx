@@ -39,11 +39,26 @@ export default function Header() {
     <header 
       className={cn(
         "fixed top-0 left-0 right-0 z-[500] transition-all duration-700 transform-gpu",
-        isScrolled ? "bg-surface/80 backdrop-blur-3xl shadow-2xl shadow-black/20 h-20 border-b border-white/5" : "bg-transparent h-28"
+        isScrolled ? "bg-background/80 backdrop-blur-3xl shadow-2xl shadow-black/20 h-20 border-b border-border-custom" : "bg-transparent h-28"
       )}
     >
       <div className="max-w-[1920px] mx-auto h-full px-6 md:px-12 flex items-center justify-between">
         
+         {/* Center Logo */}
+        <Link 
+          href="/" 
+          className="flex-col items-center group cursor-pointer hidden md:flex"
+        >
+          <div className="flex flex-col items-center">
+            <h1 className="text-xl sm:text-2xl md:text-5xl font-display font-medium text-text-main uppercase tracking-tighter leading-none group-hover:text-brand transition-colors duration-500">
+               LUMINA<span className="text-brand">.</span>
+            </h1>
+            <p className="text-[8px] md:text-[8px] font-black uppercase tracking-[0.6em] text-muted-main mt-1.5 opacity-60 group-hover:opacity-100 transition-opacity">Editorial Artifacts</p>
+          </div>
+        </Link>
+
+
+
         {/* Left Nav */}
         <nav className="hidden lg:flex items-center gap-12">
            <button 
@@ -72,19 +87,7 @@ export default function Header() {
            <Menu className="w-5 h-5 text-text-main" />
         </button>
 
-        {/* Center Logo */}
-        <Link 
-          href="/" 
-          className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group cursor-pointer"
-        >
-          <div className="flex flex-col items-center">
-            <h1 className="text-xl sm:text-2xl md:text-5xl font-display font-medium text-text-main uppercase tracking-tighter leading-none group-hover:text-brand transition-colors duration-500">
-               LUMINA<span className="text-brand">.</span>
-            </h1>
-            <p className="text-[8px] md:text-[8px] font-black uppercase tracking-[0.6em] text-muted-main mt-1.5 opacity-60 group-hover:opacity-100 transition-opacity">Editorial Artifacts</p>
-          </div>
-        </Link>
-
+       
         {/* Right Actions */}
         <div className="flex items-center gap-4 md:gap-8">
            
@@ -114,7 +117,7 @@ export default function Header() {
               </AnimatePresence>
            </button>
 
-           <div className="h-6 w-px bg-white/10 hidden md:block" />
+           <div className="h-6 w-px bg-border-custom hidden md:block" />
 
            {/* Account - Desktop only */}
            <Link href="/account" className="hidden lg:flex items-center gap-3 group">

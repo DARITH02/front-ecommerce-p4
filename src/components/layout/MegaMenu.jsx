@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronRight, ArrowRight, Sparkles, TrendingUp, Zap, Hexagon, 
@@ -7,24 +8,52 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import useStore from '@/lib/store/useStore';
-import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-
-const categories = [
-  { name: 'New Arrivals', items: ['Men\'s Fashion', 'Women\'s Fashion', 'Shoes', 'Accessories', 'Beauty'] },
-  { name: 'Clothing', items: ['T-shirts', 'Jackets', 'Trousers', 'Knitwear', 'Dresses', 'Blouses'] },
-  { name: 'Accessories', items: ['Bags', 'Belts', 'Wallets', 'Sunglasses', 'Jewelry', 'Watches'] },
-  { name: 'Brands', items: ['Lumina Signature', 'Ethereal', 'Onyx Collective', 'Minimalists', 'Editorial'] },
-];
-
-const featuredProducts = [
-  { id: 1, name: 'Minimalist Silk Dress', price: 299, image: 'https://images.unsplash.com/photo-1539109132314-d4d8b05774d5?auto=format&fit=crop&w=400&q=80' },
-  { id: 2, name: 'Editorial Wool Coat', price: 450, image: 'https://images.unsplash.com/photo-1544022613-e87ce7526edb?auto=format&fit=crop&w=400&q=80' },
-];
+import { api } from '@/lib/api/client';
 
 export default function MegaMenu() {
   const { isMegaMenuOpen, setMegaMenuOpen } = useStore();
   const menuRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        const [catsRes, productsRes] = await Promise.all([
+          api.categories.getAll(),
+          api.products.getAll('?limit=2')
+        ]);
+        
+        const fetchedCats = catsRes.data || catsRes;
+        const fetchedProducts = productsRes.data || productsRes;
+
+        setCategories(Array.isArray(fetchedCats) ? fetchedCats.slice(0, 3).map(c => ({
+          name: c.name,
+          slug: c.slug,
+          items: c.children?.map(child => child.name) || ['New Arrivals', 'Best Sellers']
+        })) : []);
+
+        setFeaturedProducts(Array.isArray(fetchedProducts) ? fetchedProducts.slice(0, 2).map(p => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          price: p.sale_price || p.price,
+          image: p.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1544022613-e87ce7526edb?auto=format&fit=crop&w=400&q=80'
+        })) : []);
+
+      } catch (error) {
+        console.error('Failed to fetch menu data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isMegaMenuOpen) {
+      fetchMenuData();
+    }
+  }, [isMegaMenuOpen]);
 
   useEffect(() => {
     const handleKeydown = (e) => {
@@ -87,22 +116,34 @@ export default function MegaMenu() {
                   Featured Pieces
                 </h4>
                 <div className="flex flex-col gap-4">
-                  {featuredProducts.map((product) => (
-                    <Link key={product.id} href={`/product/${product.id}`} className="group flex items-center gap-4">
-                      <div className="relative w-20 h-28 overflow-hidden rounded-md bg-surface-3">
-                        <Image 
-                          src={product.image} 
-                          alt={product.name} 
-                          fill 
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
+                  {loading ? (
+                    [...Array(2)].map((_, i) => (
+                      <div key={i} className="flex items-center gap-4 animate-pulse">
+                        <div className="w-20 h-28 bg-surface-3 rounded-md" />
+                        <div className="space-y-2">
+                           <div className="h-4 w-32 bg-surface-3 rounded" />
+                           <div className="h-3 w-16 bg-surface-3 rounded" />
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-sm font-medium text-text-main group-hover:text-brand transition-colors">{product.name}</p>
-                        <p className="text-xs text-muted-main font-mono">${product.price}</p>
-                      </div>
-                    </Link>
-                  ))}
+                    ))
+                  ) : (
+                    featuredProducts.map((product) => (
+                      <Link key={product.id} href={`/product/${product.slug}`} className="group flex items-center gap-4">
+                        <div className="relative w-20 h-28 overflow-hidden rounded-md bg-surface-3">
+                          <Image 
+                            src={product.image} 
+                            alt={product.name} 
+                            fill 
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <p className="text-sm font-medium text-text-main group-hover:text-brand transition-colors">{product.name}</p>
+                          <p className="text-xs text-muted-main font-mono">${product.price}</p>
+                        </div>
+                      </Link>
+                    ))
+                  )}
                   <Link href="/shop" className="text-xs font-medium uppercase tracking-tighter hover:text-brand flex items-center gap-2 mt-2">
                     View All Collections <ArrowRight className="w-3 h-3" />
                   </Link>

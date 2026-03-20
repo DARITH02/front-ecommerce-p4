@@ -16,7 +16,7 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="footer bg-ink border-t border-border-custom text-white pt-24 pb-12 transition-all duration-500 overflow-hidden relative">
+    <footer className="footer bg-background border-t border-border-custom text-text-main pt-24 pb-12 transition-all duration-500 overflow-hidden relative">
       <div className="max-w-[1920px] mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-24 relative z-10">
         
         {/* Brand Column */}
@@ -44,7 +44,7 @@ export default function Footer() {
 
           {/* Newsletter Snippet */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-white/80">Stay Inspired</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-text-main/80">Stay Inspired</h4>
             <div className="relative group">
               <input 
                 type="email" 
@@ -67,7 +67,7 @@ export default function Footer() {
                 <li key={link}>
                   <Link 
                     href="#" 
-                    className="text-muted-main hover:text-white transition-colors text-sm hover:translate-x-1 inline-block duration-300"
+                    className="text-muted-main hover:text-text-main transition-colors text-sm hover:translate-x-1 inline-block duration-300"
                   >
                     {link}
                   </Link>
@@ -96,7 +96,7 @@ export default function Footer() {
         </div>
 
         {/* Language Picker */}
-        <div className="flex items-center gap-2 group cursor-pointer hover:text-white transition-colors">
+        <div className="flex items-center gap-2 group cursor-pointer hover:text-text-main transition-colors text-muted-main">
           <span className="text-xs font-bold tracking-widest">ENGLISH / USD</span>
           <div className="w-4 h-4 rounded-full bg-surface-3 flex items-center justify-center group-hover:bg-brand">
             <div className="w-1.5 h-1.5 bg-muted-main rounded-full group-hover:bg-ink"></div>

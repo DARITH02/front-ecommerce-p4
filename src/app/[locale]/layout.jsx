@@ -51,7 +51,7 @@ export default async function LocaleLayout({ children, params }) {
       <head>
         <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=cabinet-grotesk@100,200,300,400,500,700,800,900&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased selection:bg-brand selection:text-ink">
+      <body className="antialiased selection:bg-brand selection:text-ink" suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <Header />

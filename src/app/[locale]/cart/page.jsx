@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ArrowRight, Trash2, Heart, Plus, Minus, MoveRight, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, ArrowRight, Trash2, Heart, Plus, Minus, MoveRight, ArrowLeft, ChevronLeft } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import useStore from '@/lib/store/useStore';
@@ -44,15 +44,15 @@ export default function CartPage() {
   }
 
   return (
-    <div className="bg-surface pt-40 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto min-h-screen">
+    <div className="bg-background pt-40 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto min-h-screen">
       
       {/* Header */}
       <div className="mb-16 space-y-4">
         <Link href="/shop" className="flex items-center gap-2 text-[10px] text-brand font-black uppercase tracking-[0.3em] hover:text-white transition-colors mb-6 group">
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Collections
         </Link>
-        <div className="flex items-end justify-between border-b border-white/5 pb-12">
-          <h1 className="text-5xl md:text-8xl font-display font-medium text-white uppercase tracking-tighter leading-none">Shopping Bag</h1>
+        <div className="flex items-end justify-between border-b border-border-custom pb-12">
+          <h1 className="text-5xl md:text-8xl font-display font-medium text-text-main uppercase tracking-tighter leading-none">Shopping Bag</h1>
           <p className="text-sm text-muted-main font-bold uppercase tracking-widest hidden md:block">Items <b>({cart.length})</b></p>
         </div>
       </div>
@@ -107,12 +107,14 @@ export default function CartPage() {
                     >
                        {/* Piece */}
                        <div className="col-span-1 md:col-span-6 flex items-center gap-6">
-                          <Link href={`/product/${item.id}`} className="relative w-28 h-36 rounded-2xl overflow-hidden shrink-0 border border-white/10 group-hover:scale-105 transition-transform duration-700">
+                          <Link href={`/product/${item.slug || item.id}`} className="relative w-28 h-36 rounded-2xl overflow-hidden shrink-0 border border-white/10 group-hover:scale-105 transition-transform duration-700">
                              <Image src={item.image} alt={item.name} fill className="object-cover" />
                           </Link>
                           <div className="space-y-2">
                              <p className="text-[10px] text-brand font-black uppercase tracking-widest">{item.brand || 'Lumina Editorial'}</p>
-                             <h4 className="text-xl font-display font-medium text-white uppercase tracking-tight group-hover:text-brand transition-colors line-clamp-1">{item.name}</h4>
+                             <Link href={`/product/${item.slug || item.id}`}>
+                                <h4 className="text-xl font-display font-medium text-white uppercase tracking-tight group-hover:text-brand transition-colors line-clamp-1">{item.name}</h4>
+                             </Link>
                              <div className="flex gap-4 pt-4">
                                 <button 
                                   onClick={() => removeFromCart(item.id, item.variant)}

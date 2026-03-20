@@ -28,12 +28,12 @@ export default function CheckoutPage() {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0));
 
   return (
-    <div className="bg-surface pt-40 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto min-h-screen">
+    <div className="bg-background pt-40 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto min-h-screen">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-20">
          <div className="space-y-4 text-center md:text-left">
-            <h1 className="text-4xl md:text-7xl font-display font-medium text-white uppercase tracking-tighter leading-none mb-4">Secure Checkout</h1>
+            <h1 className="text-4xl md:text-7xl font-display font-medium text-text-main uppercase tracking-tighter leading-none mb-4">Secure Checkout</h1>
             <div className="flex items-center gap-6 justify-center md:justify-start">
                {steps.map((step, idx) => (
                   <div key={idx} className="flex items-center gap-3 group relative cursor-pointer" onClick={() => setCurrentStep(idx)}>
@@ -44,7 +44,7 @@ export default function CheckoutPage() {
                      )}>
                         {currentStep > idx ? <CheckCircle className="w-5 h-5" /> : idx + 1}
                      </div>
-                     <span className={cn("text-[9px] uppercase tracking-[0.4em] font-bold hidden sm:block", currentStep >= idx ? "text-white" : "text-muted-main")}>{step}</span>
+                     <span className={cn("text-[9px] uppercase tracking-[0.4em] font-bold hidden sm:block", currentStep >= idx ? "text-text-main" : "text-muted-main")}>{step}</span>
                      {idx < steps.length - 1 && <span className="w-8 h-px bg-white/10 hidden sm:block" />}
                   </div>
                ))}
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
                   >
                      <div className="space-y-8 bg-surface-2 p-12 rounded-[40px] border border-white/5 shadow-2xl">
                         <div className="flex justify-between items-center">
-                           <h3 className="text-2xl font-display font-medium text-white uppercase tracking-tight">Contact Editorial</h3>
+                           <h3 className="text-2xl font-display font-medium text-text-main uppercase tracking-tight">Contact Editorial</h3>
                            <Link href="/login" className="text-[10px] text-brand font-black uppercase tracking-widest border-b border-brand/20 pb-1">Log in for faster checkout</Link>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -88,7 +88,7 @@ export default function CheckoutPage() {
                      </div>
 
                      <div className="space-y-8 bg-surface-2 p-12 rounded-[40px] border border-white/5 shadow-2xl relative overflow-hidden group">
-                        <h3 className="text-2xl font-display font-medium text-white uppercase tracking-tight relative z-10">Shipping Silhouette</h3>
+                        <h3 className="text-2xl font-display font-medium text-text-main uppercase tracking-tight relative z-10">Shipping Silhouette</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                            <div className="md:col-span-2 space-y-3">
                               <label className="text-[10px] uppercase font-bold text-muted-main tracking-widest pl-4">Full Legal Name</label>

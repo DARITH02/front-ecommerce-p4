@@ -5,17 +5,50 @@ import { motion } from 'framer-motion';
 import { Timer, ArrowRight, Zap, ShoppingBag, Sparkles, ShoppingCart, Heart, Eye } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-
-const flashProducts = [
-  { id: 1, name: 'Minimalist Tote', price: 120, originalPrice: 180, image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=400&q=80', discount: 33 },
-  { id: 2, name: 'Editorial Boots', price: 299, originalPrice: 450, image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=400&q=80', discount: 34 },
-  { id: 3, name: 'Luxury Suit Set', price: 540, originalPrice: 850, image: 'https://images.unsplash.com/photo-1594932224010-75f430c30225?auto=format&fit=crop&w=400&q=80', discount: 36 },
-  { id: 4, name: 'Signature Shades', price: 150, originalPrice: 220, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=400&q=80', discount: 32 },
-  { id: 5, name: 'Editorial Knit', price: 180, originalPrice: 260, image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=400&q=80', discount: 31 },
-];
+import { api } from '@/lib/api/client';
+import { calculateDiscount, resolveImageUrl } from '@/lib/utils';
 
 export default function FlashSale() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({ dd: 0, hh: 0, mm: 0, ss: 0 });
+
+  useEffect(() => {
+    const fetchFlashProducts = async () => {
+      try {
+        const response = await api.products.getAll();
+        const fetchedProducts = response.data || response;
+        
+        const mappedProducts = Array.isArray(fetchedProducts) ? fetchedProducts
+          .filter(p => p.sale_price)
+          .map(p => {
+            const currentPrice = parseFloat(p.sale_price || p.price);
+            const basePrice = parseFloat(p.price);
+            const hasPromotion = p.sale_price && parseFloat(p.sale_price) < basePrice;
+            
+            return {
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              price: currentPrice,
+              originalPrice: hasPromotion ? basePrice : null,
+              image: resolveImageUrl(p.images?.[0]?.image_url || p.images?.[0]?.image_path || p.image_url || p.image_path || p.image),
+              secondaryImage: resolveImageUrl(p.images?.[1]?.image_url || p.images?.[1]?.image_path || p.images?.[0]?.image_url || p.image_url),
+              brand: p.brand?.name || (p.brand_id ? `Brand ${p.brand_id}` : 'Flash Sale'),
+              discount: hasPromotion ? Math.round(((basePrice - currentPrice) / basePrice) * 100) : 0
+            };
+          }).slice(0, 5) : [];
+
+        setProducts(mappedProducts);
+      } catch (error) {
+        console.error('Failed to fetch flash products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlashProducts();
+  }, []);
 
   useEffect(() => {
     // Set target to 48 hours from now
@@ -72,53 +105,58 @@ export default function FlashSale() {
 
         {/* Right Side: Horizontal Strip */}
         <div className="flex-[2] w-full flex overflow-x-auto gap-6 scrollbar-hide pb-8 -mr-6 md:-mr-12 pl-2">
-          {flashProducts.map((product, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.1, duration: 0.8 }}
-              viewport={{ once: true }}
-              className="flex-shrink-0 w-72 group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden p-4 group"
-            >
-              {/* Image Container */}
-              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-surface-2 mb-4">
-                <Image 
-                  src={product.image} 
-                  alt={product.name} 
-                  fill 
-                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
-                />
-                
-                {/* Badges */}
-                <span className="absolute top-4 left-4 bg-ink text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest">
-                  -{product.discount}%
-                </span>
-                
-                {/* Action Hover */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                  <button className="w-10 h-10 bg-white text-ink rounded-full flex items-center justify-center hover:bg-brand hover:text-white transition-all hover:scale-110">
-                    <ShoppingCart className="w-4 h-4" />
-                  </button>
-                  <button className="w-10 h-10 bg-white text-ink rounded-full flex items-center justify-center hover:bg-brand hover:text-white transition-all hover:scale-110">
-                    <Heart className="w-4 h-4" />
-                  </button>
-                  <button className="w-10 h-10 bg-white text-ink rounded-full flex items-center justify-center hover:bg-brand hover:text-white transition-all hover:scale-110">
-                    <Eye className="w-4 h-4" />
-                  </button>
+          {loading ? (
+             [...Array(3)].map((_, i) => (
+               <div key={i} className="flex-shrink-0 w-72 h-96 bg-white/10 rounded-3xl animate-pulse" />
+             ))
+          ) : (
+            products.map((product, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.1, duration: 0.8 }}
+                viewport={{ once: true }}
+                className="flex-shrink-0 w-72 group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden p-4 group"
+              >
+                {/* Image Container */}
+                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-surface-2 mb-4">
+                  <Image 
+                    src={product.image || '/placeholder.jpg'} 
+                    alt={product.name} 
+                    fill 
+                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                  />
+                  
+                  {/* Badges */}
+                  <span className="absolute top-4 left-4 bg-ink text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest">
+                    -{product.discount}%
+                  </span>
+                  
+                  {/* Action Hover */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <Link href={`/product/${product.slug}`} className="w-10 h-10 bg-white text-ink rounded-full flex items-center justify-center hover:bg-brand hover:text-white transition-all hover:scale-110">
+                      <Eye className="w-4 h-4" />
+                    </Link>
+                    <button className="w-10 h-10 bg-white text-ink rounded-full flex items-center justify-center hover:bg-brand hover:text-white transition-all hover:scale-110">
+                      <ShoppingCart className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Details */}
-              <div className="space-y-2">
-                <h4 className="text-white font-display font-medium text-lg truncate group-hover:text-ink transition-colors">{product.name}</h4>
-                <div className="flex items-center gap-3 font-mono">
-                  <span className="text-ink font-bold text-xl">${product.price}</span>
-                  <span className="text-white/40 line-through text-xs">${product.originalPrice}</span>
+                {/* Details */}
+                <div className="space-y-2">
+                  <Link href={`/product/${product.slug}`}>
+                    <h4 className="text-white font-display font-medium text-lg truncate group-hover:text-ink transition-colors">{product.name}</h4>
+                  </Link>
+                  <div className="flex items-center gap-3 font-mono">
+                    <span className="text-ink font-bold text-xl">${product.price}</span>
+                    <span className="text-white/40 line-through text-xs">${product.originalPrice}</span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          )}
         </div>
 
       </div>

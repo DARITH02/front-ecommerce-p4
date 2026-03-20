@@ -39,10 +39,10 @@ const Counter = ({ value, label, suffix = '+' }) => {
 
 export default function BrandStory() {
   return (
-    <section className="py-24 bg-surface-2 border-y border-border-custom px-6 md:px-12 max-w-[1920px] mx-auto text-center relative overflow-hidden">
+    <section className="py-24 bg-surface-2 border-y border-border-custom px-6 md:px-12 w-11/12 mx-auto text-center relative overflow-hidden rounded-3xl">
       <div className="max-w-4xl mx-auto space-y-12 relative z-10">
         <p className="text-xs text-brand uppercase tracking-[0.5em] font-bold">The Lumina Philosophy</p>
-        <h2 className="text-4xl md:text-[80px] font-display font-bold text-white uppercase leading-[1] tracking-tighter">
+        <h2 className="text-4xl md:text-[80px] font-display font-bold text-text-main uppercase leading-[1] tracking-tighter">
           Crafting <span className="text-brand">Timeless</span> <br /> 
           Editorial Legacies.
         </h2>

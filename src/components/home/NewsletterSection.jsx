@@ -22,7 +22,7 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="py-24 bg-brand px-6 md:px-12 max-w-[1920px] mx-auto overflow-hidden relative">
+    <section className="py-24 bg-brand px-6 md:px-12 w-11/12 mx-auto overflow-hidden relative">
       <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 relative z-10">
         
         {/* Left: Copy */}

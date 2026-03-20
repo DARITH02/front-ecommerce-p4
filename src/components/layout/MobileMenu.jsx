@@ -102,7 +102,7 @@ export default function MobileMenu() {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 bottom-0 w-full md:w-[90%] max-w-sm bg-surface z-[600] xl:hidden flex flex-col shadow-3xl overflow-hidden"
+            className="fixed top-0 left-0 bottom-0 w-full md:w-[90%] max-w-sm bg-background z-[600] xl:hidden flex flex-col shadow-3xl overflow-hidden"
           >
             {/* Header: Brand & Close */}
             <div className="px-8 py-6 border-b border-border-custom flex justify-between items-center bg-surface-2/40 backdrop-blur-md">

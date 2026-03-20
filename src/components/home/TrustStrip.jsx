@@ -13,7 +13,7 @@ const trustItems = [
 export default function TrustStrip() {
   return (
     <section className="bg-surface-2 border-y border-border-custom py-12 relative overflow-hidden">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <div className="w-11/12 mx-auto px-6 md:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
         {trustItems.map((item, idx) => (
           <motion.div 
             key={idx}
@@ -27,7 +27,7 @@ export default function TrustStrip() {
               <item.icon className="w-6 h-6" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-sm font-display font-medium uppercase tracking-widest text-white">{item.title}</h4>
+              <h4 className="text-sm font-display font-medium uppercase tracking-widest text-text-main">{item.title}</h4>
               <p className="text-xs text-muted-main leading-relaxed font-light">{item.desc}</p>
             </div>
           </motion.div>

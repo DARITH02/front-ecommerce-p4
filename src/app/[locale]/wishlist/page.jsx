@@ -1,41 +1,71 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, ArrowRight, Trash2, LayoutGrid, Filter } from 'lucide-react';
+import { Heart, ShoppingBag, ArrowRight, Trash2, LayoutGrid, Filter, RefreshCw } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import useStore from '@/lib/store/useStore';
 import { formatPrice } from '@/lib/utils';
 import ProductCard from '@/components/product/ProductCard';
-
-// Mock database to find products by ID
-const allProducts = [
-  { id: 1, name: 'Editorial Cashmere Scarf', price: 180, originalPrice: 220, brand: 'Editorial', badge: 'Sale', image: 'https://images.unsplash.com/photo-1520903920234-7546ab806509?auto=format&fit=crop&w=800&q=80' },
-  { id: 2, name: 'Signature Silk Blazer', price: 450, brand: 'Lumina Signature', badge: 'Best Seller', image: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&w=800&q=80' },
-  { id: 3, name: 'Luxury Suit Set', price: 540, originalPrice: 850, brand: 'Onyx Collective', badge: 'Sale', image: 'https://images.unsplash.com/photo-1594932224010-75f430c30225?auto=format&fit=crop&w=800&q=80' },
-  { id: 4, name: 'Minimalist Tote', price: 120, brand: 'Minimalists', image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80' },
-  { id: 5, name: 'Editorial Boots', price: 299, brand: 'Editorial', badge: 'New', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80' },
-  { id: 6, name: 'Urban Leather Bag', price: 420, brand: 'Onyx Collective', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80' },
-  { id: 7, name: 'Minimalist Silk Blouse', price: 150, brand: 'Ethereal', badge: 'New', image: 'https://images.unsplash.com/photo-1539109132314-d4d8b05774d5?auto=format&fit=crop&w=800&q=80' },
-  { id: 8, name: 'Signature Shades', price: 80, brand: 'Lumina Signature', badge: 'Essential', image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=800&q=80' },
-];
+import { api } from '@/lib/api/client';
 
 export default function WishlistPage() {
   const { wishlist } = useStore();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWishlistProducts = async () => {
+      try {
+        const response = await api.products.getAll();
+        const fetchedProducts = response.data || response;
+        
+        const mappedProducts = Array.isArray(fetchedProducts) ? fetchedProducts.map(p => ({
+          ...p,
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          price: parseFloat(p.sale_price || p.price),
+          originalPrice: p.sale_price ? parseFloat(p.price) : null,
+          image: p.images?.[0]?.image_url,
+          secondaryImage: p.images?.[1]?.image_url || p.images?.[0]?.image_url,
+          badge: p.sale_price ? 'Sale' : (p.is_new ? 'New' : null),
+          brand: p.brand?.name || 'Editorial'
+        })) : [];
+
+        setProducts(mappedProducts);
+      } catch (error) {
+        console.error('Failed to fetch wishlist products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWishlistProducts();
+  }, []);
   
-  const wishlistedProducts = allProducts.filter(p => wishlist.includes(p.id));
+  const wishlistedProducts = products.filter(p => wishlist.includes(p.id));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-brand" />
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-surface pt-40 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto min-h-screen">
+    <div className="bg-background pt-40 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto min-h-screen">
       
       {/* Header */}
       <div className="mb-20 space-y-4">
          <div className="flex items-center gap-3 text-[10px] text-brand font-black uppercase tracking-[0.4em] mb-4">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <span className="w-1 h-1 bg-white/20 rounded-full" />
-            <span className="text-white">Wishlist Silhouette</span>
+            <Link href="/" className="hover:text-text-main transition-colors">Home</Link>
+            <span className="w-1 h-1 bg-border-custom rounded-full" />
+            <span className="text-text-main">Wishlist Silhouette</span>
          </div>
-         <h1 className="text-4xl md:text-8xl font-display font-medium text-white uppercase tracking-tighter leading-none">
+         <h1 className="text-4xl md:text-8xl font-display font-medium text-text-main uppercase tracking-tighter leading-none">
             Saved <span className="text-brand">Visions.</span>
          </h1>
          <p className="text-sm text-muted-main uppercase tracking-widest font-bold opacity-60 italic max-w-sm">A curated library of your desired editorial pieces, awaiting your final direction.</p>
@@ -73,8 +103,8 @@ export default function WishlistPage() {
         )}
       </AnimatePresence>
 
-      {/* Recommended for you footer (placeholder) */}
-      {wishlistedProducts.length > 0 && (
+      {/* Recommended for you footer */}
+      {products.length > 0 && (
         <div className="mt-32 pt-24 border-t border-white/5">
            <div className="flex justify-between items-end mb-16">
               <div className="space-y-4">
@@ -86,14 +116,15 @@ export default function WishlistPage() {
               </Link>
            </div>
            
-           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-1000">
-              {allProducts.slice(0, 4).map((p) => (
-                <div key={p.id} className="space-y-4 cursor-not-allowed">
-                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden grayscale">
-                      <Image src={p.image} alt={p.name} fill className="object-cover" />
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+              {products.slice(0, 4).map((p) => (
+                <Link key={p.id} href={`/product/${p.slug}`} className="space-y-4 group">
+                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-surface-2">
+                      <Image src={p.image || 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&w=600&q=80'} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                    </div>
-                   <h5 className="text-[10px] font-black uppercase tracking-widest text-white/40">{p.name}</h5>
-                </div>
+                   <h5 className="text-[10px] font-black uppercase tracking-widest text-white group-hover:text-brand transition-colors">{p.name}</h5>
+                </Link>
               ))}
            </div>
         </div>

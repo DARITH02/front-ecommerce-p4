@@ -6,25 +6,45 @@ import { Search, X, TrendingUp, Clock, ArrowRight, Sparkles, Filter, LayoutGrid,
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import useStore from '@/lib/store/useStore';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn, formatPrice, resolveImageUrl } from '@/lib/utils';
+import { api } from '@/lib/api/client';
 
 const trendingTerms = ['Cashmere Editorial', 'Signature Blazer', 'Onyx Collective', 'Minimalists Tote'];
-const suggestions = [
-  { id: 1, name: 'Editorial Cashmere Scarf', price: 180, image: 'https://images.unsplash.com/photo-1520903920234-7546ab806509?auto=format&fit=crop&w=400&q=80' },
-  { id: 2, name: 'Signature Silk Blazer', price: 450, image: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&w=400&q=80' },
-  { id: 3, name: 'Luxury Suit Set', price: 540, image: 'https://images.unsplash.com/photo-1594932224010-75f430c30225?auto=format&fit=crop&w=400&q=80' },
-];
 
 export default function SearchOverlay() {
   const { isSearchOpen, toggleSearch, recentSearches, addRecentSearch, removeRecentSearch } = useStore();
   const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (isSearchOpen) {
        setTimeout(() => inputRef.current?.focus(), 100);
+       fetchSuggestions();
     }
   }, [isSearchOpen]);
+
+  const fetchSuggestions = async () => {
+    try {
+      const response = await api.products.getAll('?limit=3');
+      const fetchedProducts = response.data || response;
+      
+      const mappedSuggestions = Array.isArray(fetchedProducts) ? fetchedProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        price: p.sale_price || p.price,
+        image: p.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1544022613-e87ce7526edb?auto=format&fit=crop&w=400&q=80'
+      })) : [];
+
+      setSuggestions(mappedSuggestions);
+    } catch (error) {
+      console.error('Failed to fetch search suggestions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -45,8 +65,8 @@ export default function SearchOverlay() {
             className="fixed inset-0 z-[750] bg-surface/90 backdrop-blur-3xl overflow-hidden p-6 md:p-12 lg:p-24"
           >
              <button 
-               onClick={toggleSearch}
-               className="absolute top-12 right-12 w-16 h-16 bg-surface-3 border border-border-custom rounded-full flex items-center justify-center text-text-main hover:bg-brand hover:text-ink transition-all shadow-2xl z-50 group"
+                onClick={toggleSearch}
+                className="absolute top-12 right-12 w-16 h-16 bg-surface-3 border border-border-custom rounded-full flex items-center justify-center text-text-main hover:bg-brand hover:text-ink transition-all shadow-2xl z-50 group"
              >
                 <X className="w-8 h-8 group-hover:rotate-180 transition-transform duration-500" />
              </button>
@@ -116,23 +136,29 @@ export default function SearchOverlay() {
                         Curated Recommendations
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                         {suggestions.map((p) => (
-                            <Link 
-                              key={p.id} 
-                              href={`/product/${p.id}`}
-                              onClick={toggleSearch}
-                              className="group space-y-4"
-                            >
-                               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-border-custom group-hover:scale-105 transition-transform duration-700">
-                                  <Image src={p.image} alt={p.name} fill className="object-cover" />
-                                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                               </div>
-                               <div className="space-y-1">
-                                  <h5 className="text-sm font-bold uppercase tracking-widest text-text-main group-hover:text-brand transition-colors truncate">{p.name}</h5>
-                                  <p className="text-xs font-mono font-bold text-muted-main">{formatPrice(p.price)}</p>
-                               </div>
-                            </Link>
-                         ))}
+                         {loading ? (
+                           [...Array(3)].map((_, i) => (
+                             <div key={i} className="aspect-[3/4] rounded-2xl bg-surface-3 animate-pulse" />
+                           ))
+                         ) : (
+                           suggestions.map((p, idx) => (
+                              <Link 
+                                key={idx} 
+                                href={`/product/${p.slug || p.id}`}
+                                onClick={toggleSearch}
+                                className="group space-y-4"
+                              >
+                                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-border-custom group-hover:scale-105 transition-transform duration-700">
+                                    <Image src={resolveImageUrl(p.image)} alt={p.name} fill className="object-cover" />
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                 </div>
+                                 <div className="space-y-1">
+                                    <h5 className="text-sm font-bold uppercase tracking-widest text-text-main group-hover:text-brand transition-colors truncate">{p.name}</h5>
+                                    <p className="text-xs font-mono font-bold text-muted-main">{formatPrice(p.price)}</p>
+                                 </div>
+                              </Link>
+                           ))
+                         )}
                       </div>
                       
                       <button className="w-full flex items-center justify-between bg-surface-2 border border-border-custom p-8 rounded-3xl group hover:border-brand/40 transition-all shadow-2xl">

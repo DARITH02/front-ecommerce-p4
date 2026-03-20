@@ -25,13 +25,13 @@ export default function ReviewsCarousel() {
   const prev = () => setIndex((index - 1 + reviews.length) % reviews.length);
 
   return (
-    <section className="py-24 bg-surface max-w-[1920px] mx-auto px-6 md:px-12 relative overflow-hidden">
+    <section className="py-24 bg-surface mx-auto w-full px-6 md:px-12 relative overflow-hidden">
       <div className="text-center mb-16 space-y-4">
         <p className="text-xs text-brand uppercase tracking-[0.4em] font-bold">Client Voices</p>
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-display font-medium text-white uppercase tracking-tight">The Lumina Experience</h2>
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-display font-medium text-text-main uppercase tracking-tight">The Lumina Experience</h2>
       </div>
 
-      <div className="max-w-4xl mx-auto relative px-12 md:px-24">
+      <div className="w-11/12 mx-auto relative px-12 md:px-24">
         
         {/* Quote Icon Background */}
         <Quote className="absolute -top-12 left-0 w-32 h-32 text-brand opacity-5 scale-x-[-1]" />
@@ -52,7 +52,7 @@ export default function ReviewsCarousel() {
                 ))}
               </div>
               
-              <blockquote className="text-xl sm:text-2xl md:text-4xl font-display font-light text-white leading-tight italic max-w-2xl px-4">
+              <blockquote className="text-xl sm:text-2xl md:text-4xl font-display font-light text-text-main leading-tight italic max-w-2xl px-4">
                 &ldquo;{reviews[index].text}&rdquo;
               </blockquote>
 
@@ -63,7 +63,7 @@ export default function ReviewsCarousel() {
                    </div>
                 </div>
                 <div className="text-left space-y-1">
-                  <p className="text-lg font-display font-medium text-white">{reviews[index].author}</p>
+                  <p className="text-lg font-display font-medium text-text-main">{reviews[index].author}</p>
                   <p className="text-xs text-muted-main uppercase tracking-widest font-bold">{reviews[index].role} — {reviews[index].product}</p>
                 </div>
               </div>
