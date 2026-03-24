@@ -1,11 +1,9 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { Link } from '@/i18n/routing';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { 
-  Instagram, Twitter, Facebook, ArrowRight, MapPin, 
-  Phone, Mail, Check, CreditCard, Sparkles, ShoppingBag, Youtube, Send, Apple, Wallet
+  Instagram, Twitter, Facebook, Send, CreditCard, Apple, Wallet
 } from 'lucide-react';
 
 const footerLinks = {
@@ -15,6 +13,11 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/register');
+
+  if (isAuthPage) return null;
+
   return (
     <footer className="footer bg-background border-t border-border-custom text-text-main pt-24 pb-12 transition-all duration-500 overflow-hidden relative">
       <div className="max-w-[1920px] mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-24 relative z-10">
@@ -22,7 +25,7 @@ export default function Footer() {
         {/* Brand Column */}
         <div className="space-y-8">
           <div className="flex items-center gap-2">
-            <span className="text-3xl font-display font-bold tracking-tight">
+            <span className="text-3xl font-display font-bold tracking-tight text-text-main">
               LUMINA<span className="text-brand">.</span>
             </span>
           </div>
@@ -31,7 +34,7 @@ export default function Footer() {
             Join our global community and experience the future of digital commerce.
           </p>
           <div className="flex gap-4">
-            {[Instagram, Twitter, Facebook, Youtube].map((Icon, idx) => (
+            {[Instagram, Twitter, Facebook].map((Icon, idx) => (
               <Link 
                 key={idx} 
                 href="#" 
@@ -97,7 +100,7 @@ export default function Footer() {
 
         {/* Language Picker */}
         <div className="flex items-center gap-2 group cursor-pointer hover:text-text-main transition-colors text-muted-main">
-          <span className="text-xs font-bold tracking-widest">ENGLISH / USD</span>
+          <span className="text-xs font-bold tracking-widest uppercase tracking-[0.2em]">ENGLISH / USD</span>
           <div className="w-4 h-4 rounded-full bg-surface-3 flex items-center justify-center group-hover:bg-brand">
             <div className="w-1.5 h-1.5 bg-muted-main rounded-full group-hover:bg-ink"></div>
           </div>

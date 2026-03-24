@@ -68,7 +68,7 @@ export default function ProductCard({ product, view = 'grid' }) {
             
             <div className="flex gap-4">
                {product.colors?.map((color, idx) => (
-                 <div key={idx} className="w-6 h-6 rounded-full border border-white/20 p-0.5 group/swatch cursor-pointer">
+                 <div key={idx} className="w-6 h-6 rounded-full border border-border-custom p-0.5 group/swatch cursor-pointer">
                     <div className="w-full h-full rounded-full" style={{ backgroundColor: color }} />
                  </div>
                ))}
@@ -152,9 +152,9 @@ export default function ProductCard({ product, view = 'grid' }) {
         {/* Quick View Trigger Desktop */}
         <div 
           onClick={(e) => { e.stopPropagation(); setIsQuickViewOpen(true); }}
-          className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10 cursor-pointer"
+          className="absolute inset-0 bg-ink/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10 cursor-pointer"
         >
-           <div className="w-12 h-12 bg-surface/20 backdrop-blur-md border border-border-custom rounded-full flex items-center justify-center text-foreground scale-0 group-hover:scale-100 transition-transform duration-500 delay-100">
+           <div className="w-12 h-12 bg-surface-2/40 backdrop-blur-md border border-border-custom rounded-full flex items-center justify-center text-text-main scale-0 group-hover:scale-100 transition-transform duration-500 delay-100">
              <Eye className="w-5 h-5" />
            </div>
         </div>

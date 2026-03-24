@@ -20,6 +20,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://e-commence-p4.onrender.com/api/:path*',
+      },
+    ];
+  },
 };
  
 export default withNextIntl(nextConfig);

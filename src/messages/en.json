@@ -13,5 +13,17 @@
     "empty": "Your bag is empty.",
     "subtotal": "Subtotal",
     "checkout": "Begin Checkout"
+  },
+  "Auth": {
+    "register": "Register",
+    "createAccount": "Create an Account",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Login",
+    "registerButton": "Establish Membership",
+    "loading": "Processing..."
   }
 }

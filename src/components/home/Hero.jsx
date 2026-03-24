@@ -160,6 +160,8 @@ export default function Hero() {
                 src={featuredProducts.featured?.[0]?.image || 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&w=500&q=80'} 
                 alt={featuredProducts.featured?.[0]?.name || "Product 1"} 
                 fill 
+                priority
+                fetchPriority="high"
                 className="object-cover transition-transform duration-1000 group-hover:scale-110" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
@@ -180,6 +182,8 @@ export default function Hero() {
                 src={featuredProducts.latest?.[0]?.image || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=80'} 
                 alt={featuredProducts.latest?.[0]?.name || "Product 2"} 
                 fill 
+                priority
+                fetchPriority="high"
                 className="object-cover transition-transform duration-1000 group-hover:scale-110" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">

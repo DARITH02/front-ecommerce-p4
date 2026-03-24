@@ -3,7 +3,11 @@ import { persist } from 'zustand/middleware';
 
 const useStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
+      // Hydration State
+      hasHydrated: false,
+      setHasHydrated: (state) => set({ hasHydrated: state }),
+
       // UI State
       isDarkMode: true,
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
@@ -56,6 +60,7 @@ const useStore = create(
             : item
         )
       })),
+      clearCart: () => set({ cart: [] }),
       
       // Wishlist State
       wishlist: [],
@@ -64,6 +69,15 @@ const useStore = create(
           ? state.wishlist.filter(id => id !== productId)
           : [...state.wishlist, productId]
       })),
+
+      // Auth State
+      user: null,
+      token: null,
+      role: null,
+      setUser: (user) => set({ user }),
+      setToken: (token) => set({ token }),
+      setRole: (role) => set({ role }),
+      clearAuth: () => set({ user: null, token: null, role: null }),
     }),
     {
       name: 'lumina-store-storage',
@@ -71,8 +85,14 @@ const useStore = create(
         isDarkMode: state.isDarkMode, 
         cart: state.cart, 
         wishlist: state.wishlist,
-        recentSearches: state.recentSearches
+        recentSearches: state.recentSearches,
+        user: state.user,
+        token: state.token,
+        role: state.role
       }),
+      onRehydrateStorage: () => (state) => {
+        state.setHasHydrated(true);
+      },
     }
   )
 );

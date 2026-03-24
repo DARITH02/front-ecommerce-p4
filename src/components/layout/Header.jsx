@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { 
   ShoppingBag, Heart, User, Search, Menu, X, 
   ChevronDown, Sun, Moon, LayoutGrid
@@ -13,20 +14,27 @@ import MegaMenu from './MegaMenu';
 import MobileMenu from './MobileMenu';
 
 export default function Header() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeMegaMenu, setActiveMegaMenu] = useState(null);
   const { scrollY } = useScroll();
   
   const { 
     cart, wishlist, toggleCart, toggleSearch, isDarkMode, toggleDarkMode, 
-    setMegaMenuOpen, setMobileNavOpen 
+    setMegaMenuOpen, setMobileNavOpen, user, hasHydrated 
   } = useStore();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const isAuthPage = pathname.includes('/login') || pathname.includes('/register');
 
   useEffect(() => {
     return scrollY.on('change', (latest) => {
       setIsScrolled(latest > 50);
     });
   }, [scrollY]);
+
+  if (isAuthPage) return null;
 
   const navItems = [
     { label: 'Shop All', href: '/shop' },
@@ -119,12 +127,17 @@ export default function Header() {
 
            <div className="h-6 w-px bg-border-custom hidden md:block" />
 
-           {/* Account - Desktop only */}
-           <Link href="/account" className="hidden lg:flex items-center gap-3 group">
-              <div className="w-10 h-10 border border-border-custom rounded-full flex items-center justify-center group-hover:border-brand/40 group-hover:bg-brand/5 transition-all">
-                 <User className="w-4 h-4 text-text-main group-hover:text-brand" />
-              </div>
-           </Link>
+             {/* Account - Desktop only */}
+             <Link href={(mounted && hasHydrated && user) ? "/account" : "/login"} className="hidden lg:flex items-center gap-3 group">
+                <div className="w-10 h-10 border border-border-custom rounded-full flex items-center justify-center group-hover:border-brand/40 group-hover:bg-brand/5 transition-all">
+                   <User className="w-4 h-4 text-text-main group-hover:text-brand" />
+                </div>
+                {(!mounted || !hasHydrated || !user) && (
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-main group-hover:text-brand transition-colors hidden xl:block">
+                    Join / Login
+                  </span>
+                )}
+             </Link>
 
            {/* Wishlist - Desktop only */}
            <Link href="/wishlist" className="hidden lg:flex items-center gap-3 relative group">

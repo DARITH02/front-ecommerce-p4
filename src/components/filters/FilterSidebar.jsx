@@ -212,8 +212,8 @@ export default function FilterSidebar({ className, filters, onFilterChange, maxP
                      {brand.name}
                    </span>
                 </div>
-                <div className="bg-surface-3 px-2 py-0.5 rounded-md border border-white/5 opacity-40 group-hover:opacity-100 transition-opacity">
-                   <span className="text-[9px] font-mono text-white font-bold tracking-tighter">{brand.count}</span>
+                <div className="bg-surface-3 px-2 py-0.5 rounded-md border border-border-custom opacity-40 group-hover:opacity-100 transition-opacity">
+                   <span className="text-[9px] font-mono text-text-main font-bold tracking-tighter">{brand.count}</span>
                 </div>
               </button>
             );

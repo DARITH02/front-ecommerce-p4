@@ -8,5 +8,5 @@ export default (request) => {
  
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/', '/(en|km|fr|zh)/:path*']
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };
